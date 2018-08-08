@@ -1,0 +1,50 @@
+{% extends 'personal_base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+        <div class=" personalRight col-md-10 col-lg-10 col-sm-12">
+
+        <div class="displayContent myCouponContent  active" id="myCouponContent">
+            <h4>优惠券</h4>
+            <div class="myCoupon ">
+                <div class="formHead tabs">
+                    <a href="?style=onuse"><span class="{% ifequal style 'onuse' %}active {% else %}{% endifequal %}">未使用</span></a>
+                    <a href="?style=used"><span class="{% ifequal style 'used' %}active {% else %}{% endifequal %}">已使用</span></a>
+                    <a href="?style=tolate"><span class="{% ifequal style 'tolate' %}active {% else %}{% endifequal %}">已过期</span></a>
+                </div>
+                <div class="formBody ">
+                    <div class="tabContent active">
+                        {% for coupon in coupons %}
+                        <div class="col-xs-12  col-sm-12 col-md-6 col-lg-4 getCouponDiv  {% ifequal style 'onuse' %}active {% else %}expire{% endifequal %}">
+                            <div class="leftDiv">
+                                <span class="moneyType">￥</span>
+                                <div class="price">{{ coupon.coupon_mount }}</div>
+                                <span class="activity">新春活动</span>
+                            </div>
+                            <div class="rightDiv">
+                                <div class="top">
+                                    <div class="superposed"><span>可叠加</span><input class="couponId" value="9876"
+                                                                                   style="display: none"></div>
+                                    <span class="limit">【限C1报名】</span>
+                                    <div class="getCouponBtn"><span>立即使用</span><input class="couponId" value="89"
+                                                                                      style="display: none"></div>
+
+
+                                </div>
+                                <div class="expireDate"><span>自领取之日起30天有效</span></div>
+                            </div>
+                            <div class="whiteCircle"></div>
+                            <div class="invalid"><span>已领取</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+            <div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

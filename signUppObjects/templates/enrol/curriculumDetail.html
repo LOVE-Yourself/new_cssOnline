@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block body %}<body style="background: #F5F5F5">{% endblock %}
+
+{% block content %}
+<div class="blankHeight"></div>
+<div class="container">
+    <div class="curriculumDetail">
+        <div class="pic col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <img src="{% static "images/c1square2x.png"  %}">
+        </div>
+        <div class="rightInformation col-md-8 col-lg-8 col-xs-12 col-sm-12">
+            <div class="topDiv">
+                <h4>{{ course.name }}</h4>
+                <div><span class="oldPrize">￥{{ course.cost_old }}</span>
+                    <span class="currentPrize">￥{{ course.cost_new }}</span>
+                </div>
+
+            </div>
+            <div class="midDiv">
+                {% for advantage in course.get_advantages %}
+                <div class="tbbServer">
+                    <li class="fa fa-map-marker"></li>
+                    <span>{{ advantage.detail }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="btmDiv">
+                <div class="entryBtn"><span><a href="{% url 'course:course_info' course.id %}">立即报名</a></span></div>
+            </div>
+        </div>
+    </div>
+    <h4>练车场地</h4>
+    <div class="promiseDiv">
+        <div class=" col-md-7 col-xs-12">
+            <div>
+                <div class="pic">
+                    <div id="allmap"></div>
+                </div>
+            </div>
+        </div>
+        <div class=" col-md-5 col-xs-12">
+            <div class="tbbPromise">
+                <h4>Tuobaba承诺：</h4>
+                <span>{{ course.practiceplace.detail }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="chargeDetail">
+
+            <div class="leftDiv col-md-8 col-xs-12 col-sm-12">
+            <div>
+                {% for cost in course.get_costs %}
+                {% if cost.name != '合计'%}
+                    <div>
+                        <span>{{ cost.name }}</span>
+                        <span>￥{{ cost.money }}</span>
+                    </div>
+                {% endif %}
+                {% endfor %}
+
+
+                {% for cost in course.get_costs %}
+                {% if cost.name == '合计' %}
+                    <div>
+                        <span>{{ cost.name }}</span>
+                        <span>￥{{ cost.money }}</span>
+                    </div>
+                {% endif %}
+                {% endfor %}
+
+                </div>
+                <div class="explain">
+                    说明：<br>
+                    费用里包含政府费用1000元，保险部门费用50元。另外体检费30元由学员自理，办理手续时交给车管所。
+                </div>
+            </div>
+            <div class="rightDiv col-md-4 col-xs-12 col-sm-12" >
+                <span>免费赠送智能真车模拟培训</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block custom_js %}
+
+     <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=SKV6VVTGEo7skuvgHBfQFpcvoFuTG7kr"></script>
+    <script type="text/javascript">
+    // var mapPoint={lng: 120.183154, lat: 30.190564};
+    var map = new BMap.Map("allmap");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point(appConfig.mapPoint.lng, appConfig.mapPoint.lat),14);  // 初始化地图,设置中心点坐标和地图级别
+    var myIcon = new BMap.Icon("http://7xic1p.com1.z0.glb.clouddn.com/markers.png", new BMap.Size(23, 25), {
+        // 指定定位位置
+        offset: new BMap.Size(10, 25),
+        // 当需要从一幅较大的图片中截取某部分作为标注图标时，需要指定大图的偏移位置
+        imageOffset: new BMap.Size(0, 0) // 设置图片偏移
+    });
+    var marker1 = new BMap.Marker(new BMap.Point(appConfig.mapPoint.lng, appConfig.mapPoint.lat),{icon: myIcon});  // 创建标注
+    function SquareOverlay(point, length, color ,text,img){
+        this._point = point;
+        this._length = length;
+        this._color = color;
+        this._text = text;
+        this._img = img;
+    }
+    // 继承API的BMap.Overlay
+    SquareOverlay.prototype = new BMap.Overlay();
+
+    // 实现初始化方法
+    SquareOverlay.prototype.initialize = function(map){
+        // 保存map对象实例
+        this._map = map;
+        // 创建div元素，作为自定义覆盖物的容器
+        var div = document.createElement("div");
+        div.style.position = "absolute";
+        // 可以根据参数设置元素外观
+        div.style.width = this._length + "px";
+        div.style.height = this._length + "px";
+        // div.style.background = this._color;
+        var divMapImg = document.createElement("img");
+        divMapImg.style.position = "relative";
+        divMapImg.className="mapImg";
+        divMapImg.src=this._img;
+        var divText = document.createElement("div");
+        divText.style.position = "absolute";
+        divText.className="mapText";
+        divText.append( this._text)
+        div.appendChild(divMapImg);
+        div.appendChild(divText);
+        // 将div添加到覆盖物容器中
+        map.getPanes().markerPane.appendChild(div);
+        // 保存div实例
+        this._div = div;
+        // 需要将div元素作为方法的返回值，当调用该覆盖物的show、
+        // hide方法，或者对覆盖物进行移除时，API都将操作此元素。
+        return div;
+    }
+    // 实现绘制方法  （您需要在draw方法中设置覆盖物的位置，每当地图状态发生变化（比如：位置移动、级别变化）时，API都会调用覆盖物的draw方法，用于重新计算覆盖物的位置）
+    SquareOverlay.prototype.draw = function(){
+
+        var position = map.pointToOverlayPixel(this._point);
+        this._div.style.left = position.x - this._length / 2 + "px";
+        this._div.style.top = position.y - this._length / 2 + "px";
+    }
+    // 实现显示方法
+    SquareOverlay.prototype.show = function(){
+        if (this._div){
+            this._div.style.display = "";
+        }
+    }
+    // 实现隐藏方法
+    SquareOverlay.prototype.hide = function(){
+        if (this._div){
+            this._div.style.display = "none";
+        }
+    }
+    // 添加自定义覆盖物
+    var mySquare = new SquareOverlay(new BMap.Point(appConfig.mapPoint.lng, appConfig.mapPoint.lat), 22, "#76e1b5","练车地点","{% static "images/location.png" %}");
+    map.addOverlay(mySquare);
+    //创建信息窗口
+    var infoWindow1 = new BMap.InfoWindow("<div class='trainPlaceInfoWin'> <span class='fa-map-marker fa'> 练车地点</span><img src=“{% static "images/practicePlace2x.png" %}> </div>");
+    marker1.addEventListener("click", function(){this.openInfoWindow(infoWindow1);});
+    marker1.addEventListener("touch", function(){this.openInfoWindow(infoWindow1);});
+    // map.addOverlay(marker1);
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes:[
+            BMAP_NORMAL_MAP,
+            BMAP_HYBRID_MAP
+        ]
+    }));
+
+
+    map.setCurrentCity("杭州");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+
+
+
+    // 定义一个控件类，即function
+    function ZoomControl(){
+        // 设置默认停靠位置和偏移量
+        this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+        this.defaultOffset = new BMap.Size(10, 10);
+    }
+    // 通过JavaScript的prototype属性继承于BMap.Control
+    ZoomControl.prototype = new BMap.Control();
+
+    // 自定义控件必须实现initialize方法，并且将控件的DOM元素返回
+    // 在本方法中创建个div元素作为控件的容器，并将其添加到地图容器中
+    ZoomControl.prototype.initialize = function(map){
+        // 创建一个DOM元素
+        var div = document.createElement("div");
+        // 添加文字说明
+        div.appendChild(document.createTextNode("+放大"));
+        // 设置样式
+        div.style.cursor = "pointer";
+        div.style.border = "1px solid gray";
+        div.style.backgroundColor = "white";
+        // 绑定事件，点击一次放大两级
+        div.onclick = function(e){
+            map.zoomTo(map.getZoom() + 2);
+        }
+
+        map.getContainer().appendChild(div);
+        return div;
+    }
+
+
+    // 定义一个控件类，即function
+    function ZoomControlSub(){
+        // 设置默认停靠位置和偏移量
+        this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+        this.defaultOffset = new BMap.Size(60, 10);
+    }
+    // 通过JavaScript的prototype属性继承于BMap.Control
+    ZoomControlSub.prototype = new BMap.Control();
+
+    ZoomControlSub.prototype.initialize = function(map){
+
+
+        var divSub = document.createElement("div");
+        // 添加文字说明
+        divSub.appendChild(document.createTextNode("-减小"));
+        // 设置样式
+        divSub.style.cursor = "pointer";
+        divSub.style.border = "1px solid gray";
+        divSub.style.backgroundColor = "white";
+        // 绑定事件，点击一次放大两级
+        divSub.onclick = function(e){
+            map.zoomTo(map.getZoom() - 2);
+        }
+        // 添加DOM元素到地图中
+        map.getContainer().appendChild(divSub);
+        // 将DOM元素返回
+        return divSub;
+    }
+
+    // 创建控件实例
+    var myZoomCtrl = new ZoomControl();
+    var myZoomCtrlSub= new ZoomControlSub();
+    // 添加到地图当中
+    map.addControl(myZoomCtrl);
+    map.addControl(myZoomCtrlSub);
+
+    // var map = new BMap.Map("allmap");
+    // map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+    // // 创建地址解析器实例
+    // var myGeo = new BMap.Geocoder();
+    // // 将地址解析结果显示在地图上，并调整地图视野
+    // myGeo.getPoint("杭州市滨江区滨安路1189号", function(point){
+    //     console.log(point)
+    //         if (point) {
+    //             map.centerAndZoom(point, 16);
+    //             map.addOverlay(new BMap.Marker(point));
+    //         }
+    //     },
+    //     "杭州市");
+ </script>
+
+{% endblock %}
+
+
+

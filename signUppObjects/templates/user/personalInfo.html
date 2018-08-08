@@ -1,0 +1,55 @@
+{% extends 'personal_base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+            <div class=" personalRight col-md-10 col-lg-10 col-sm-12">
+        <div class="displayContent  userInformation  active " id="userInformation">
+            <h4>个人信息</h4>
+
+            <div class="userInf">
+
+                <div class="userImage">
+                    <div class="userIconDiv">
+                        <div id="userIcon">
+                            <img id="preview" alt="" src="{{ MEDIA_URL }}{{ request.user.image }}"/>
+
+                        </div>
+                        <span>头像</span>
+
+
+                        <form class="am-form" method="post" enctype="multipart/form-data" style="display: none">
+                            <input type="file" id="head" name="head" onchange="previewImage(this)">
+                            <!--<button type="submit" class="am-btn am-btn-primary am-btn-xs">保存</button>-->
+                        </form>
+                    </div>
+
+
+                </div>
+                <div class="nicknameDiv">
+                    <span class="label">用户名:</span>
+                    <span>{{ request.user.nick_name }}</span>
+                </div>
+                <div class="userPhoneDiv">
+                    <span class="label">绑定手机:</span>
+                    <span>{{ request.user.telphone }}</span>
+                </div>
+                <div class="realNameDiv">
+                    <span class="label">真实姓名:</span>
+
+                    <form method="post">
+                        <input value="{{ request.user.true_name }}" class="Disable" onchange="userNameChange()">
+                        <i class="fa fa-edit "> </i>
+                        <button type="submit"><i class="fa fa-upload "> </i></button>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+
+        </div>
+{% endblock %}
+
+
+

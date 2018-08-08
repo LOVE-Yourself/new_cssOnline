@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/swiper.min.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="blankHeight"></div>
+<div class="banner">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            {% for banner in banners %}
+            <div class="swiper-slide"><a href="{{ banner.url }}"><img src="{{ MEDIA_URL }}{{ banner.image }}"></a></div>
+            {% endfor %}
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+
+        <!-- 如果需要导航按钮 -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+        <!-- 如果需要滚动条 -->
+        <div class="swiper-scrollbar"></div>
+    </div>
+</div>
+<div class="main">
+    <div class="coupon container">
+        <h3>新春专享优惠</h3>
+        <div class="couponDiv">
+            {% for coupon in coupons %}
+            <div class="col-xs-12  col-sm-6 col-md-4 col-lg-3">
+                <div class="getCouponDiv {% if coupon in usercoupons  %} expire {% else %} available{% endif %}">
+                    <input class="couponId" value="123456789" style="display: none">
+                    <div class="leftDiv">
+                        <span class="moneyType">￥</span>
+                        <div class="price">{{ coupon.coupon_mount }}</div>
+                        <span class="activity">{{ active.title }}</span>
+                    </div>
+                    <div class="rightDiv">
+                        <div class="top">
+                            <span class="limit">【{{ coupon.belong_course }}】</span>
+                            <div class="getCouponBtn"><span>领取></span>
+                                <input class="couponId" value="{{ coupon.code }}" style="display: none">
+                                <input class="activeId" value="{{ active.code }}" style="display: none">
+                            </div>
+
+                        </div>
+                        <div class="expireDate"><span>{{ coupon.end_detail }}</span></div>
+                    </div>
+                    <div class="whiteCircle"></div>
+                    <div class="invalid"><span>已领取</span></div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="rule">
+            <h4>活动规则</h4>
+            <div>
+                <span>
+                {{ active.detail }}
+               </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block custom_js %}
+        <script src="{% static 'js/swiper.min.js' %}"></script>
+<script>
+    var mySwiper = new Swiper ('.swiper-container', {
+        direction: 'horizontal',
+        loop: true,
+
+        // 如果需要分页器
+        pagination: {
+            el: '.swiper-pagination',
+        },
+        speed:800,
+        autoplay:true,
+        loop : true,
+        loopAdditionalSlides : 2,
+        autoplayDisableOnInteraction : false,
+        // 如果需要前进后退按钮
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        }
+    })
+</script>
+
+{% endblock %}
+
+
